@@ -66,12 +66,12 @@ def scale_bar(ax, length=20, location=(0.92, 0.95)):
     sbx = x0 + (x1 - x0) * location[0] # get the right x coordinate of the scale bar
     sby = y0 + (y1 - y0) * location[1] # get the right y coordinate of the scale bar
 
-    ax.plot([sbx, sbx-length*1000], [sby, sby], color='k', linewidth=4, transform=ax.projection) # plot a thick black line
-    ax.plot([sbx-(length/2)*1000, sbx-length*1000], [sby, sby], color='w', linewidth=2, transform=ax.projection) # plot a white line from 0 to halfway
+    ax.plot([sbx, sbx-length*500], [sby, sby], color='k', linewidth=4, transform=ax.projection) # plot a thick black line
+    ax.plot([sbx-(length/2)*500, sbx-length*500], [sby, sby], color='w', linewidth=2, transform=ax.projection) # plot a white line from 0 to halfway
 
-    ax.text(sbx, sby-(length/4)*1000, f"{length} km", ha='center', transform=ax.projection, fontsize=6) # add a label at the right side
-    ax.text(sbx-(length/2)*1000, sby-(length/4)*1000, f"{int(length/2)} km", ha='center', transform=ax.projection, fontsize=6) # add a label in the center
-    ax.text(sbx-length*1000, sby-(length/4)*1000, '0 km', ha='center', transform=ax.projection, fontsize=6) # add a label at the left side
+    ax.text(sbx, sby-(length/4)*500, f"{length} km", ha='center', transform=ax.projection, fontsize=6) # add a label at the right side
+    ax.text(sbx-(length/2)*500, sby-(length/4)*500, f"{int(length/2)} km", ha='center', transform=ax.projection, fontsize=6) # add a label in the center
+    ax.text(sbx-length*500, sby-(length/4)*500, '0 km', ha='center', transform=ax.projection, fontsize=6) # add a label at the left side
 
     return ax
 
@@ -135,7 +135,10 @@ river_feat = ShapelyFeature(rivers['geometry'], # first argument is the geometry
 ax.add_feature(river_feat) # add the collection of features to the map
 
 # ShapelyFeature creates a polygon, so for point data we can just use ax.plot()
-town_handle = ax.plot(towns.geometry.x, towns.geometry.y, 's', color='0.5', ms=6, transform=ccrs.PlateCarree())
+townpoints = towns[towns['STATUS']=='Town']
+citiespoints = towns[towns['STATUS']=='City']
+townpoints_handle = ax.plot(townpoints.geometry.x, townpoints.geometry.y, 's', color='0.5', ms=6, transform=ccrs.PlateCarree())
+citiespoints_handle = ax.plot(citiespoints.geometry.x, citiespoints.geometry.y, 'o', color='b', ms=6, transform=ccrs.PlateCarree())
 
 # generate a list of handles for the county datasets
 # first, we add the list of names, then the list of colors, and finally we set the transparency
@@ -153,7 +156,7 @@ nice_names = [name.title() for name in county_names]
 
 # ax.legend() takes a list of handles and a list of labels corresponding to the objects 
 # you want to add to the legend
-handles = county_handles + water_handle + river_handle + town_handle # use '+' to concatenate (combine) lists
+handles = county_handles + water_handle + river_handle + townpoints_handle + citiespoints_handle # use '+' to concatenate (combine) lists
 labels = nice_names + ['Lakes', 'Rivers', 'Towns']
 
 leg = ax.legend(handles, labels, title='Legend', title_fontsize=12, 
@@ -174,4 +177,4 @@ for ind, row in towns.iterrows(): # towns.iterrows() returns the index and row
 scale_bar(ax)
 
 # save the figure as map.png, cropped to the axis (bbox_inches='tight'), and a dpi of 300
-fig.savefig('map.png', bbox_inches='tight', dpi=300)
+fig.savefig('wk2optTEST.png', bbox_inches='tight', dpi=300)
